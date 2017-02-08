@@ -11,6 +11,9 @@ module.exports = {
   getInstanceID: function() {
     return RNDeviceInfo.instanceId;
   },
+  getSerialNumber: function() {
+    return RNDeviceInfo.serialNumber;
+  },
   getDeviceId: function () {
     return RNDeviceInfo.deviceId;
   },
