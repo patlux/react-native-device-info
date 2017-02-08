@@ -17,6 +17,9 @@ module.exports = {
   getIpAddress: function() {
      return RNDeviceInfo.ipAddress;
   },
+  getMacAddress: function() {
+     return RNDeviceInfo.macAddress;
+  },
   getDeviceId: function () {
     return RNDeviceInfo.deviceId;
   },
