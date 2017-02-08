@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.text.format.Formatter;
 
 import com.google.android.gms.iid.InstanceID;
 
@@ -90,6 +92,9 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
     constants.put("buildVersion", "not available");
     constants.put("buildNumber", 0);
 
+    WifiManager wm = (WifiManager) this.reactContext.getSystemService(Context.WIFI_SERVICE);
+    String ipAddress = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+
     try {
       PackageInfo info = packageManager.getPackageInfo(packageName, 0);
       constants.put("appVersion", info.versionName);
@@ -111,6 +116,7 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
 
     constants.put("instanceId", InstanceID.getInstance(this.reactContext).getId());
     constants.put("serialNumber", Build.SERIAL);
+    constants.put("ipAddress", ipAddress);
     constants.put("deviceName", deviceName);
     constants.put("systemName", "Android");
     constants.put("systemVersion", Build.VERSION.RELEASE);
