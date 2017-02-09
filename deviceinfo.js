@@ -15,10 +15,10 @@ module.exports = {
     return RNDeviceInfo.serialNumber;
   },
   getIpAddress: function() {
-     return RNDeviceInfo.ipAddress;
+     return RNDeviceInfo.getIpAddress();
   },
   getMacAddress: function() {
-     return RNDeviceInfo.macAddress;
+     return RNDeviceInfo.getMacAddress();
   },
   getDeviceId: function () {
     return RNDeviceInfo.deviceId;

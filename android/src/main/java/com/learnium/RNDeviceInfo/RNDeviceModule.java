@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.Promise;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -30,9 +31,16 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
 
   ReactApplicationContext reactContext;
 
+  WifiInfo wifiInfo;
+
   public RNDeviceModule(ReactApplicationContext reactContext) {
     super(reactContext);
+
     this.reactContext = reactContext;
+
+
+    WifiManager manager = (WifiManager) reactContext.getSystemService(Context.WIFI_SERVICE);
+    this.wifiInfo = manager.getConnectionInfo();
   }
 
   @Override
@@ -82,6 +90,18 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
     callback.invoke(keyguardManager.isKeyguardSecure());
   }
 
+  @ReactMethod
+  public void getIpAddress(Promise p) {
+    String ipAddress = Formatter.formatIpAddress(wifiInfo.getIpAddress());
+    p.resolve(ipAddress);
+  }
+
+  @ReactMethod
+  public void getMacAddress(Promise p) {
+    String macAddress = wifiInfo.getMacAddress();
+    p.resolve(macAddress);
+  }
+
   @Override
   public @Nullable Map<String, Object> getConstants() {
     HashMap<String, Object> constants = new HashMap<String, Object>();
@@ -93,15 +113,10 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
     constants.put("buildVersion", "not available");
     constants.put("buildNumber", 0);
 
-    WifiManager manager = (WifiManager) this.reactContext.getSystemService(Context.WIFI_SERVICE);
-    WifiInfo wifiInfo = manager.getConnectionInfo();
-    String ipAddress = Formatter.formatIpAddress(wifiInfo.getIpAddress());
-    String macAddress = wifiInfo.getMacAddress();
-
     try {
-      PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-      constants.put("appVersion", packageInfo.versionName);
-      constants.put("buildNumber", packageInfo.versionCode);
+      PackageInfo info = packageManager.getPackageInfo(packageName, 0);
+      constants.put("appVersion", info.versionName);
+      constants.put("buildNumber", info.versionCode);
     } catch (PackageManager.NameNotFoundException e) {
       e.printStackTrace();
     }
@@ -119,8 +134,6 @@ public class RNDeviceModule extends ReactContextBaseJavaModule {
 
     constants.put("instanceId", InstanceID.getInstance(this.reactContext).getId());
     constants.put("serialNumber", Build.SERIAL);
-    constants.put("ipAddress", ipAddress);
-    constants.put("macAddress", macAddress);
     constants.put("deviceName", deviceName);
     constants.put("systemName", "Android");
     constants.put("systemVersion", Build.VERSION.RELEASE);
